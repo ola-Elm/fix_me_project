@@ -307,7 +307,6 @@ class MessageStreamBuilder extends StatelessWidget {
   }
 }
 
-//Message Line
 class MessageLine extends StatelessWidget {
   const MessageLine({Key? key, this.text, this.sender, required this.isMe})
       : super(key: key);

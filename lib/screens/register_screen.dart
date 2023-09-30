@@ -249,6 +249,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           username: myname.text,
                           email: myemail.text,
                           fcmToken: fcmToken ?? '',
+                          userId: FirebaseAuth.instance.currentUser!.uid,
                         );
 
                         await FirebaseFirestore.instance

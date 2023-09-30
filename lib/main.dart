@@ -65,7 +65,7 @@ class _MyAppState extends State<MyApp> {
         'home': (context) => HomeScreen(),
         'engHome': (context) => EngHomeScreen(),
         'chat': (context) => ChatScreen(),
-        'chats': (context) => ChatsScreen(),
+        'chats': (context) => ChatHomeScreen(),
         'chatc': (context) => ChatCScreen(),
       },
     );
