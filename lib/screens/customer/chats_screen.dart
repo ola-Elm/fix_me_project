@@ -92,16 +92,16 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                     // ChatClass chatClass = ChatClass(
                                     //
                                     // )
-                                    await FirebaseFirestore.instance
-                                        .collection('chat')
-                                        .add({
-                                      'chatid': i.toString(),
-                                      'createduser': FirebaseAuth
-                                              .instance.currentUser!.email ??
-                                          '',
-                                      //enduser=> هو المهندس الي بعت مسج
-                                      'enduser': customer[i]['UserId'],
-                                    });
+                                    // await FirebaseFirestore.instance
+                                    //     .collection('chat')
+                                    //     .add({
+                                    //   'chatid': i.toString(),
+                                    //   'createduser': FirebaseAuth
+                                    //           .instance.currentUser!.email ??
+                                    //       '',
+                                    //   //enduser=> هو المهندس الي بعت مسج
+                                    //   'enduser': customer[i]['UserId'],
+                                    // });
 
                                     // Navigator.of(context)
                                     //     .push(MaterialPageRoute(

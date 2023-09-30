@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:fixme_flutter/message.dart';
 import 'package:fixme_flutter/message_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -16,12 +15,12 @@ late User signInUser;
 late String userId;
 
 class ChatCScreen extends StatefulWidget {
-  final String? createduser;
-  final String index;
+  //final String? createduser;
+  final String? index;
 
   const ChatCScreen({
-    this.index = '0',
-    this.createduser,
+    this.index,
+    // this.createduser,
   });
 
   @override
@@ -59,14 +58,6 @@ class _ChatCScreenState extends State<ChatCScreen> {
     }
   }
 
-  void messageStream() async {
-    await for (var snapshot in _firestore.collection('Message').snapshots()) {
-      for (var message in snapshot.docs) {
-        print(message.data());
-      }
-    }
-  }
-
   myrequestPermission() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
@@ -89,6 +80,25 @@ class _ChatCScreenState extends State<ChatCScreen> {
       print('User declined or has not accepted permission');
     }
   }
+
+  // Future<void> sendMessage(String receivedId, String message) async {
+  //   final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  //   final String currentUserEmail =
+  //       FirebaseAuth.instance.currentUser!.email.toString();
+  //   final Timestamp timestamp = Timestamp.now();
+  //
+  //   //creat new message
+  //
+  //   Message newMessage = Message(
+  //     senderId: currentUserId,
+  //     senderEmail: currentUserEmail,
+  //     receiverId: receivedId,
+  //     timestamp: 'timestamp',
+  //     message: message,
+  //   );
+  // }
+
+//SEND  message===================
 
   sendMessage(title, message, chatId) async {
     var headersList = {
@@ -153,16 +163,15 @@ class _ChatCScreenState extends State<ChatCScreen> {
         title: Row(
           children: [
             Text(
-              '${Message}',
+              '${signInUser.email}',
             ),
           ],
         ),
         actions: [
           IconButton(
             onPressed: () {
-              messageStream();
-              // _auth.signOut();
-              // Navigator.pop(context);
+              _auth.signOut();
+              Navigator.pop(context);
             },
             icon: const Icon(Icons.close),
           ),
@@ -174,7 +183,7 @@ class _ChatCScreenState extends State<ChatCScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             //////////////////////////////////////''''''''''''''''''''//////////////////////////////////////
-            MessageStreamBuilder(chatid: widget.index),
+            MessageStreamBuilder(chatid: '1'),
             //////////////////////////////////////
             Container(
               decoration: const BoxDecoration(
@@ -202,9 +211,16 @@ class _ChatCScreenState extends State<ChatCScreen> {
                   ),
                 ),
                 TextButton(
-                  //';'l;''
                   onPressed: () async {
                     messageTextController.clear();
+                    // Message message= Message(
+                    //   senderId:  signInUser.uid,
+                    //   senderEmail: signInUser.email.toString(),
+                    //   receiverId: ,
+                    //   timestamp: FieldValue.serverTimestamp(),
+                    //   message: messageText.toString(),
+                    // ),
+
                     _firestore.collection('Message').add({
                       'text': messageText,
                       'chatid': widget.index,
@@ -214,10 +230,7 @@ class _ChatCScreenState extends State<ChatCScreen> {
                       'time': FieldValue.serverTimestamp(),
                     });
                     await sendMessage(
-                      signInUser.email,
-                      messageText,
-                      widget.index,
-                    );
+                        'signInUser.email', messageText, widget.index);
                     // Navigator.of(context).pushNamed('chats');
                   },
                   child: Text(
@@ -234,6 +247,62 @@ class _ChatCScreenState extends State<ChatCScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class MessageStreamBuilder extends StatelessWidget {
+  final _firestore = FirebaseFirestore.instance;
+  final chatid;
+
+  MessageStreamBuilder({
+    required this.chatid,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _firestore
+          .collection('Message')
+          .where('chatid', isEqualTo: chatid)
+          .where('enduser', isEqualTo: FirebaseAuth.instance.currentUser?.email)
+          .orderBy('time')
+          .snapshots(),
+      builder: (context, snapshot) {
+        List<MessageLine> messageWidgets = [];
+
+        if (!snapshot.hasData) {
+          return const Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.blue,
+            ),
+          );
+        }
+        final messages = snapshot.data!.docs.reversed;
+        log(messages.toString());
+        for (var message in messages) {
+          final messageText = message.get('text');
+          final messageSender = message.get('sender');
+          final currentUser = FirebaseAuth.instance.currentUser?.email;
+
+          final messageWidget = MessageLine(
+            text: messageText,
+            sender: messageSender,
+            isMe: currentUser == messageSender,
+          );
+          messageWidgets.add(messageWidget);
+        }
+        return Expanded(
+          child: ListView(
+            reverse: true,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 20,
+            ),
+            children: messageWidgets,
+          ),
+        );
+      },
     );
   }
 }
