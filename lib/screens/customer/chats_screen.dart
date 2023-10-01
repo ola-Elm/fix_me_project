@@ -34,12 +34,19 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
   // }
 
   getsData() async {
-    var responcTobody = await chatref.get();
-    responcTobody.docs.forEach((element) {
-      setState(() {
-        chat.add(element.data());
-      });
-    });
+    var responcTobody = await chatref
+        .where(
+          'enduser',
+          isEqualTo: FirebaseAuth.instance.currentUser?.email?.trim(),
+        )
+        .get();
+    responcTobody.docs.forEach(
+      (element) => chat.add(
+        element.data(),
+      ),
+    );
+    print(responcTobody.docs[0].data());
+    print(FirebaseAuth.instance.currentUser?.email);
     print(chat);
   }
 
@@ -94,7 +101,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${chat[i]['createduser']}',
+                            '${chat[i]['createduser']} - ${chat[i]['chatid']}',
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             style: TextStyle(
@@ -122,17 +129,17 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                                         },
                                         btnOkOnPress: () async {
                                           /////////
-                                          ChatClass chat = ChatClass(
+                                          ChatClass chatClass = ChatClass(
                                             chatid: i.toString(),
                                             createduser: FirebaseAuth.instance
                                                     .currentUser!.email ??
                                                 '',
-                                            enduser: "chat[i]['createduser']",
+                                            enduser: chat[i]['enduser'],
                                           );
 
                                           await FirebaseFirestore.instance
                                               .collection('chat')
-                                              .add(chat.toMap());
+                                              .add(chatClass.toMap());
                                           Navigator.of(context)
                                               .push(MaterialPageRoute(
                                             builder: (context) =>
