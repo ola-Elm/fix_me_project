@@ -28,6 +28,11 @@ class ChatCScreen extends StatefulWidget {
 }
 
 class _ChatCScreenState extends State<ChatCScreen> {
+  /////
+  var alignment = (signInUser == FirebaseAuth.instance.currentUser!.uid)
+      ? Alignment.centerRight
+      : Alignment.centerLeft;
+
   final messageTextController = TextEditingController();
   final _auth = FirebaseAuth.instance;
   String? messageText;
@@ -80,25 +85,6 @@ class _ChatCScreenState extends State<ChatCScreen> {
       print('User declined or has not accepted permission');
     }
   }
-
-  // Future<void> sendMessage(String receivedId, String message) async {
-  //   final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
-  //   final String currentUserEmail =
-  //       FirebaseAuth.instance.currentUser!.email.toString();
-  //   final Timestamp timestamp = Timestamp.now();
-  //
-  //   //creat new message
-  //
-  //   Message newMessage = Message(
-  //     senderId: currentUserId,
-  //     senderEmail: currentUserEmail,
-  //     receiverId: receivedId,
-  //     timestamp: 'timestamp',
-  //     message: message,
-  //   );
-  // }
-
-//SEND  message===================
 
   sendMessage(title, message, chatId) async {
     var headersList = {
@@ -183,7 +169,7 @@ class _ChatCScreenState extends State<ChatCScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             //////////////////////////////////////''''''''''''''''''''//////////////////////////////////////
-            MessageStreamBuilder(chatid: '1'),
+            MessageStreamBuilder(chatid: widget.index),
             //////////////////////////////////////
             Container(
               decoration: const BoxDecoration(
@@ -213,13 +199,6 @@ class _ChatCScreenState extends State<ChatCScreen> {
                 TextButton(
                   onPressed: () async {
                     messageTextController.clear();
-                    // Message message= Message(
-                    //   senderId:  signInUser.uid,
-                    //   senderEmail: signInUser.email.toString(),
-                    //   receiverId: ,
-                    //   timestamp: FieldValue.serverTimestamp(),
-                    //   message: messageText.toString(),
-                    // ),
 
                     _firestore.collection('Message').add({
                       'text': messageText,
@@ -230,7 +209,7 @@ class _ChatCScreenState extends State<ChatCScreen> {
                       'time': FieldValue.serverTimestamp(),
                     });
                     await sendMessage(
-                        'signInUser.email', messageText, widget.index);
+                        signInUser.email, messageText, widget.index);
                     // Navigator.of(context).pushNamed('chats');
                   },
                   child: Text(
@@ -358,6 +337,5 @@ class MessageLine extends StatelessWidget {
         ],
       ),
     );
-    ;
   }
 }

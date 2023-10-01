@@ -81,24 +81,6 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  // Future<void> sendMessage(String receivedId, String message) async {
-  //   final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
-  //   final String currentUserEmail =
-  //       FirebaseAuth.instance.currentUser!.email.toString();
-  //   final Timestamp timestamp = Timestamp.now();
-  //
-  //   //creat new message
-  //
-  //   Message newMessage = Message(
-  //     senderId: currentUserId,
-  //     senderEmail: currentUserEmail,
-  //     receiverId: receivedId,
-  //     timestamp: 'timestamp',
-  //     message: message,
-  //   );
-  // }
-
-//SEND  message===================
   sendMessage(title, message, chatId) async {
     var headersList = {
       'Accept': '*/*',
