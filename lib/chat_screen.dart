@@ -246,8 +246,6 @@ class MessageStreamBuilder extends StatelessWidget {
       stream: _firestore
           .collection('Message')
           .where('chatid', isEqualTo: chatid)
-          .where('createduser',
-              isEqualTo: FirebaseAuth.instance.currentUser?.email)
           .orderBy('time')
           .snapshots(),
       builder: (context, snapshot) {
